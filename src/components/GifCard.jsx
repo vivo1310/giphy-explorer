@@ -34,6 +34,7 @@ const GifCard = ({ gif }) => {
     <Box key={gif.id}>
       <StyledCard onClick={handleGifClick}>
         <StyledCardMedia alt={gif.alt_text} src={gif.images.fixed_height.url} />
+        {/* (From Giphy api docs) Generally, it’s best to use the smaller fixed_height or fixed_width renditions on your preview grid. */}
       </StyledCard>
       <StyledPopover
         id={gif.id}
@@ -51,6 +52,8 @@ const GifCard = ({ gif }) => {
           <Typography variant="subtitle1">
             {`${gif.rating.toUpperCase()} rated` || "N/A"}
           </Typography>
+          {/* Include higher resolution GIF here */}
+          <img src={gif.images.original.url} alt={gif.title} />
         </div>
       </StyledPopover>
     </Box>
