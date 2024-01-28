@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.searchBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.titleText {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
