@@ -8,13 +8,20 @@ import {
 } from "@mui/material";
 import { Masonry } from "@mui/lab";
 import GifCard from "./components/GifCard";
+import GifMasonry from "./components/GifMasonry";
+import SearchBar from "./components/SearchBar";
 import { fetchTrendingGifs, searchGifs } from "./services/giphyService";
+import useInfiniteScroll from "./hooks/useInfiniteScroll";
+
 import "./App.css";
 import trendingUp from "./assets/trending-up.svg";
 import giphyIcon from "./assets/giphy-icon.png";
-import useInfiniteScroll from "./hooks/useInfiniteScroll";
+import searchIcon from "./assets/search.svg";
 
 function App() {
+  const SEARCH_RESULT_TEXT = [searchIcon, "SEARCH RESULTS"];
+  const TRENDING_TEXT = [trendingUp, "TRENDING"];
+  const [titleText, setTitleText] = useState(TRENDING_TEXT);
   const [gifs, setGifs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,15 +31,14 @@ function App() {
   const fetchGifs = async () => {
     try {
       setLoading(true);
+      setError(null);
       const offset = gifs.length; // Calculate offset based on number of gifs
       const response = searchQuery
         ? await searchGifs(searchQuery, offset)
         : await fetchTrendingGifs(offset);
       const total = response.pagination.total_count; // Calculate total number of gifs
       setTotalGifs(total); // Update total number of gifs
-
       setGifs((prevGifs) => [...prevGifs, ...response.data]);
-      setOffset((prevOffset) => prevOffset + 10); // Assuming you want to load 10 more items
     } catch (err) {
       setError("Failed to fetch products. Please try again.");
     } finally {
@@ -46,7 +52,7 @@ function App() {
   }, []); // Fetch trending GIFs on component mount
 
   useInfiniteScroll(() => {
-    if (gifs.length < totalGifs && !loading) {
+    if (gifs.length < totalGifs && !loading && !error) {
       fetchGifs();
     }
   }, [loading, error, gifs, totalGifs, searchQuery]);
@@ -57,8 +63,20 @@ function App() {
   };
 
   const handleSearchButtonClicked = (event) => {
+    setTitleText(SEARCH_RESULT_TEXT);
     setGifs([]); // Reset gifs list when performing a new search
     fetchGifs(); // Trigger searchGifs function when user type
+  };
+
+  const renderTitleText = ([icon, text]) => {
+    return (
+      <>
+        <img src={icon} alt={text} width="40px" />
+        <Typography sx={{ fontWeight: "700", fontSize: "1.5rem" }}>
+          {text}
+        </Typography>
+      </>
+    );
   };
 
   return (
@@ -67,40 +85,18 @@ function App() {
       <Typography sx={{ fontWeight: "800", fontSize: "2rem" }}>
         EXPLORER
       </Typography>
-      <Box className="searchBox">
-        <TextField
-          placeholder="Search for GIFs"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-        />
-        <Button
-          size="large"
-          sx={{ backgroundColor: "black" }}
-          variant="contained"
-          onClick={handleSearchButtonClicked}
-        >
-          Search
-        </Button>
-      </Box>
-      <Box className="titleText">
-        <img src={trendingUp} alt="trending up icon" width="40px" />
-        <Typography sx={{ fontWeight: "700", fontSize: "1.5rem" }}>
-          {searchQuery ? "SEARCH RESULTS" : "TRENDING"}
-        </Typography>
-      </Box>
-      <Masonry columns={4} spacing={2}>
-        {gifs.map((gif) => (
-          <GifCard gif={gif} />
-        ))}
-        {loading && (
-          <div style={{ textAlign: "center", padding: "16px" }}>
-            <CircularProgress />
-          </div>
-        )}
-      </Masonry>
+      <SearchBar
+        value={searchQuery}
+        onChange={handleSearchInputChange}
+        onSearch={handleSearchButtonClicked}
+      />
+      <Box className="titleText">{renderTitleText(titleText)}</Box>
+      <GifMasonry gifs={gifs} />
+      {loading && (
+        <div style={{ textAlign: "center", padding: "16px" }}>
+          <CircularProgress />
+        </div>
+      )}
       {error && (
         <Typography
           variant="body1"

@@ -6,14 +6,6 @@
   padding: 20px;
 }
 
-.searchBox {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-}
-
 .titleText {
   display: flex;
   flex-direction: row;
