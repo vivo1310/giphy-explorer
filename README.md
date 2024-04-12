@@ -2,6 +2,8 @@
 
 Giphy Explorer is a simple web application built with React and Material UI that allows users to explore trending GIFs on Giphy, search for GIFs, and view detailed information about each GIF.
 
+### [Live Preview](https://giphy-explorer-sigma.vercel.app/)
+
 ## Getting Started
 
 To run the app locally, follow these steps:
